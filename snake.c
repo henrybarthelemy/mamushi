@@ -127,16 +127,16 @@ snake_val_type_t determine_snake_val_type(snake_val_t val) {
        uint64_t v_tag = addr[0] >> 1;
        uint64_t t_tag = addr[1] >> 1;
 
-       char* name = (char *) type_lookup[t_tag][v_tag];
+       // char* name = (char *) type_lookup[t_tag][v_tag];
 
-       uint64_t assoc = addr[2];
+       // uint64_t assoc = addr[2];
 
-       sprintf(str, "%s", name);
-       if (assoc != NONE) {
-         strcat(str, "(");
-         strcat(str, sv_serialize(assoc));
-         strcat(str, ")");
-       }
+       // sprintf(str, "%s", name);
+      //  if (assoc != NONE) {
+      //    strcat(str, "(");
+      //    strcat(str, sv_serialize(assoc));
+      //    strcat(str, ")");
+      //  }
 
        break;
      default:
