@@ -211,7 +211,8 @@ blankbind :
   | UNDERSCORE %prec SEMI { BBlank(full_span()) }
 
 namebind :
-  | ID COLON typ %prec SEMI { BName($1, $3, false, full_span()) }
+  | ID %prec SEMI { BNameUntyped($1, false, full_span()) }
+  | ID COLON typ %prec SEMI { BNameTyped($1, $3, false, full_span()) }
   (* | SHADOW ID %prec SEMI { BName($2, true, full_span()) } *)
 
 declgroup :

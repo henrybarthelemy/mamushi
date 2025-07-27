@@ -1167,7 +1167,7 @@ let test_parser = [
   "def add(x: int, y: int) -> int : x + y \n add(3, 5)" 
   (Program ([], 
             [[DFun ("add", 
-                  [(BName ("x", TInt (), false, ())); (BName ("y", TInt (), false, ()))], 
+                  [(BNameTyped ("x", TInt (), false, ())); (BNameTyped ("y", TInt (), false, ()))], 
                   TInt (), 
                   EPrim2 (Plus, EId ("x", ()), EId ("y", ()), ()), 
                   ())]], 
@@ -1187,7 +1187,7 @@ let test_parser = [
   "(lambda (x: int, y: int) -> int : x && true)" 
   (Program ([], 
             [], 
-            ELambda ([(BName ("x", TInt (), false, ())); (BName ("y", TInt (), false, ()))], 
+            ELambda ([(BNameTyped ("x", TInt (), false, ())); (BNameTyped ("y", TInt (), false, ()))], 
             TInt (), 
             EPrim2 (And, EId ("x", ()), EBool (true, ()), ()), ()), 
             ())); 

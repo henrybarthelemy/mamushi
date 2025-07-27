@@ -43,7 +43,7 @@ let is_well_formed (p : sourcespan program) : sourcespan program fallible =
       (fun (scope_env, shadow_env, loe_bindings) (bind, e, _) ->
         match bind with
         | BBlank _ -> (scope_env, shadow_env, loe_bindings)
-        | BName(x, typ, t, loc) ->
+        | BNameTyped(x, typ, t, loc) ->
           let existing_opt = List.assoc_opt x shadow_env in
           let binding_errrors = 
             (match existing_opt with
@@ -52,7 +52,7 @@ let is_well_formed (p : sourcespan program) : sourcespan program fallible =
                              @ (wf_E e scope_env []))
             | None -> (wf_E e scope_env loe_bindings)) 
           in
-          (BName(x, typ, t, loc) :: scope_env, (x, loc) :: shadow_env, binding_errrors)
+          (BNameTyped(x, typ, t, loc) :: scope_env, (x, loc) :: shadow_env, binding_errrors)
         | BTuple (binds, loc) ->
           let rec process_tuple_bindings binds scope_env shadow_env loe_bindings =
             match binds with
@@ -60,14 +60,14 @@ let is_well_formed (p : sourcespan program) : sourcespan program fallible =
             | bind :: rest ->
               match bind with
               | BBlank _ -> process_tuple_bindings rest scope_env shadow_env loe_bindings
-              | BName(x, typ, t, loc) ->
+              | BNameTyped(x, typ, t, loc) ->
                 let existing_opt = List.assoc_opt x shadow_env in
                 let binding_errors =
                   match existing_opt with
                   | Some existing -> loe_bindings @ [(DuplicateId (x, loc, existing))]
                   | None -> loe_bindings
                 in
-                process_tuple_bindings rest (BName(x, typ, t, loc) :: scope_env) ((x, loc) :: shadow_env) binding_errors
+                process_tuple_bindings rest (BNameTyped(x, typ, t, loc) :: scope_env) ((x, loc) :: shadow_env) binding_errors
               | BTuple (nested_binds, nested_loc) ->
                 process_tuple_bindings (nested_binds @ rest) scope_env shadow_env loe_bindings
           in
@@ -86,7 +86,7 @@ let is_well_formed (p : sourcespan program) : sourcespan program fallible =
         | bind :: rest ->
           match bind with
           | BBlank _ -> check_binds rest shadow_env loe_bindings
-          | BName (x, typ, t, loc) ->
+          | BNameTyped (x, typ, t, loc) ->
             let existing_opt = find_bind_opt shadow_env x in
             let binding_errors =
               match existing_opt with
@@ -104,12 +104,12 @@ let is_well_formed (p : sourcespan program) : sourcespan program fallible =
         | [] -> loe_bindings
         | binding :: rest -> 
           (match binding with
-          | (BName (x, typ, t, loc), bind_expr, _) -> 
+          | (BNameTyped (x, typ, t, loc), bind_expr, _) -> 
             (* new well-formedness error for let rec declarations whose right hand sides are not all lambda expressions. *)
             let binding_errors = 
               (match bind_expr with 
                 | ELambda (bind_list, typ, body_expr, tag) -> (wf_E bind_expr new_env [])
-                | _ -> [(LetRecNonFunction (BName (x, typ, t, loc), tag))])
+                | _ -> [(LetRecNonFunction (BNameTyped (x, typ, t, loc), tag))])
             in (check_bindings rest new_env (loe_bindings @ binding_errors))
                     (* let rec expressions is restricted to only permit binding names to values; 
               it does not permit the fancier tuple bindings or underscore bindings tht we allow elsewhere *)
@@ -120,11 +120,11 @@ let is_well_formed (p : sourcespan program) : sourcespan program fallible =
         | [] -> ([], [])
         | binding :: rest -> 
           (match binding with
-          | (BName (x, typ, t, loc), bind_expr, _) -> 
+          | (BNameTyped (x, typ, t, loc), bind_expr, _) -> 
             let rest_bindings, rest_loe_dup = (collect_letrec_bindings rest) in 
             (match (find_bind_opt rest_bindings x) with
-            | Some existing -> ((BName (x, typ, t, loc) :: rest_bindings), (DuplicateId (x, loc, existing)) :: rest_loe_dup)
-            | None -> ((BName (x, typ, t, loc) :: rest_bindings), rest_loe_dup))
+            | Some existing -> ((BNameTyped (x, typ, t, loc) :: rest_bindings), (DuplicateId (x, loc, existing)) :: rest_loe_dup)
+            | None -> ((BNameTyped (x, typ, t, loc) :: rest_bindings), rest_loe_dup))
           | _ -> raise (InternalCompilerError "LetRec bindings only support names, parser should not let us get here")))
       in 
         let (new_binding_env, loe_dup_binds) = (collect_letrec_bindings binding_list) in
@@ -142,7 +142,7 @@ let is_well_formed (p : sourcespan program) : sourcespan program fallible =
       | PId (x, loc) ->
         (* check if this already exists *)
         let existing_opt = List.assoc_opt x (List.filter_map (function
-          | BName (name, _, _, loc) -> Some (name, loc)
+          | BNameTyped (name, _, _, loc) -> Some (name, loc)
           | _ -> None) env) in
         let binding_errors =
         match existing_opt with
@@ -150,7 +150,7 @@ let is_well_formed (p : sourcespan program) : sourcespan program fallible =
         | None -> loe
         in
         (* and add it to the environment either way *)
-        (BName (x, TInt loc, false, loc) :: env, binding_errors)
+        (BNameTyped (x, TInt loc, false, loc) :: env, binding_errors)
       | PTup (patterns, _) ->
         (* to the left now yall *)
         List.fold_left
@@ -195,13 +195,13 @@ let is_well_formed (p : sourcespan program) : sourcespan program fallible =
     let rec find_dup_named_args (arg_name: string) (remaining_args: sourcespan bind list) : sourcespan option =
       match remaining_args with
         | [] -> None
-        | BName(f_name, _, _, f_loc)::rest -> if (String.equal f_name arg_name) then Some f_loc else find_dup_named_args arg_name rest
+        | BNameTyped(f_name, _, _, f_loc)::rest -> if (String.equal f_name arg_name) then Some f_loc else find_dup_named_args arg_name rest
         (* todo fix other bug here relating to not finding duplicates in nested tuples *)
         | _::rest -> find_dup_named_args arg_name rest
     in let rec find_all_dup_args (args: sourcespan bind list) : (string * sourcespan * sourcespan) list =
       match args with
         | [] -> []
-        | BName(f_name, _, _, f_loc)::rest -> 
+        | BNameTyped(f_name, _, _, f_loc)::rest -> 
           (let dup_opt = find_dup_named_args f_name rest in
             (match dup_opt with
               | None -> []
@@ -229,7 +229,7 @@ let is_well_formed (p : sourcespan program) : sourcespan program fallible =
       (* wow this is so horibly done im sorry *)
       let seen_decl_env_values = (List.map (function (a, b) -> b) seen_decls) in
       (* since we don't type check it doesn't matter what our type is here, this might change to pretty print type info in non well formed programs... *)
-      let in_scope_decls = (List.map (function DFun (name, _, _, _, loc) -> BName (name, TInt dummy_span, false, loc)) (sublist @ seen_decl_env_values)) in
+      let in_scope_decls = (List.map (function DFun (name, _, _, _, loc) -> BNameTyped (name, TInt dummy_span, false, loc)) (sublist @ seen_decl_env_values)) in
       List.fold_left
       (fun (inner_decl_loe, inner_seen_decls) current_decl ->
         let new_decl_loe = wf_D current_decl inner_decl_loe inner_seen_decls in_scope_decls in
@@ -242,7 +242,7 @@ let is_well_formed (p : sourcespan program) : sourcespan program fallible =
     (* repeated code that could be avoided; hardly know her *)
     let seen_decl_env_values = (List.map (function (a, b) -> b) seen_decls) in
     (* all of these will get desugared to let rec lambda applications anyways *)
-    let body_scope_decls = (List.map (function DFun (name, _, _, _, loc) -> BName (name, TInt dummy_span, false, loc)) seen_decl_env_values) in
+    let body_scope_decls = (List.map (function DFun (name, _, _, _, loc) -> BNameTyped (name, TInt dummy_span, false, loc)) seen_decl_env_values) in
     let total_loe = wf_E body body_scope_decls decl_loe in 
     if List.length total_loe = 0 then (Ok p) else (Error total_loe)
   ;;

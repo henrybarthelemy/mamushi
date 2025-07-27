@@ -72,8 +72,8 @@ let rec desugar (p: sourcespan program) : sourcespan program =
                     (desugar_expr (ELet([(bind, (EGetItem(EId(new_tmp_bind, t), ENumber(Int64.of_int(tup_idx), t), t)), t)], tup_exp_acc, t)), i + 1))
                 binds (exp_acc, 0)) in
                 (* since we desugar after type env is built this dummy type needs to be changed once thats done *)
-                ELet([(BName(new_tmp_bind, TInt dummy_span, false, t), desugar_expr bind_exp, t)], nested_tuple_exp, t)
-            | BName _ | BBlank _ -> ELet([(name, (desugar_expr bind_exp), b_t)], 
+                ELet([(BNameTyped(new_tmp_bind, TInt dummy_span, false, t), desugar_expr bind_exp, t)], nested_tuple_exp, t)
+            | BNameTyped _ | BBlank _ -> ELet([(name, (desugar_expr bind_exp), b_t)], 
             exp_acc, t))) 
         bindings (desugar_expr exp))
       | ESeq(a, b, t) -> ELet([(BBlank(t), (desugar_expr a), t)], (desugar_expr b), t)
@@ -127,9 +127,9 @@ let rec desugar (p: sourcespan program) : sourcespan program =
                       in
                       (* Add the temporary variable to function arguments *)
                       (* since we desugar after type env is built this dummy span can be changed later *)
-                      (BName(tmp_bind_name, TInt dummy_span, false, tag) :: new_arg_acc, desugar_expr let_body)
+                      (BNameTyped(tmp_bind_name, TInt dummy_span, false, tag) :: new_arg_acc, desugar_expr let_body)
                     (* If it's a normal variable or blank, keep it as is *)
-                    | BName _ | BBlank _ -> (arg :: new_arg_acc, new_fun_body_acc)
+                    | BNameTyped _ | BBlank _ -> (arg :: new_arg_acc, new_fun_body_acc)
                   ) args ([], fun_body)
                 in
                 DFun(name, new_args, typ, desugar_expr new_fun_body, tag)) 
@@ -150,8 +150,8 @@ let rec desugar (p: sourcespan program) : sourcespan program =
                       let arg_types = List.map 
                         (fun arg -> 
                           match arg with
-                          | BName(_, arg_typ, _, _) -> arg_typ
-                          | _ -> failwith "Expected BName with type information")
+                          | BNameTyped(_, arg_typ, _, _) -> arg_typ
+                          | _ -> failwith "Expected BNameTyped with type information")
                           args 
                       in
                       TFunction (
@@ -161,7 +161,7 @@ let rec desugar (p: sourcespan program) : sourcespan program =
                         typ,
                         tag)
                   in
-                  (BName (name, function_typ, false, tag)), (ELambda (args, function_typ, fun_body, tag)), tag)
+                  (BNameTyped (name, function_typ, false, tag)), (ELambda (args, function_typ, fun_body, tag)), tag)
               decl_list)
           in
           (* Wrap each letrec in a lambda to prevent external references *)

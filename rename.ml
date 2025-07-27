@@ -21,13 +21,13 @@ let rename (p : tag program) : tag program =
         (* Traverses the bindings, renames them, and renames their exprs *)
         (List.fold_left (fun (env_acc, binding_acc) (bind, b_exp, bind_tag) -> 
           match bind with
-            | BName(b_name, typ, b, t) ->
+            | BNameTyped(b_name, typ, b, t) ->
             (* Generates the new name *)
             (let new_name: string = if (is_runtime b_name) then b_name else (sprintf "%s#%d" b_name t) in
               (* Accumulates env *)
               ((b_name, new_name)::env_acc,
                 (* Adds this binding to the previous ones *)
-                binding_acc @ [(BName(new_name, typ, b, t), (rename_expr env b_exp), bind_tag)]))
+                binding_acc @ [(BNameTyped(new_name, typ, b, t), (rename_expr env b_exp), bind_tag)]))
             | _ -> (env_acc, binding_acc @ [(bind, (rename_expr env b_exp), bind_tag)])
         ) (env, []) binds)
       in ELet (new_bindings, (rename_expr new_env body), tag)
@@ -51,9 +51,9 @@ let rename (p : tag program) : tag program =
         let (new_env, new_args) = 
           List.fold_left (fun (env_acc, arg_acc) bind -> 
             match bind with
-              | BName(b_name, typ, b, t) ->
+              | BNameTyped(b_name, typ, b, t) ->
                 let new_arg_name = sprintf "%s#%d" b_name t in
-                ((b_name, new_arg_name)::env_acc, arg_acc @ [BName(new_arg_name, typ, b, t)])
+                ((b_name, new_arg_name)::env_acc, arg_acc @ [BNameTyped(new_arg_name, typ, b, t)])
               | _ -> (env_acc, bind::arg_acc)
           ) (env, []) binds in
         ELambda(new_args, typ, rename_expr new_env body, t)
@@ -65,11 +65,11 @@ let rename (p : tag program) : tag program =
           List.fold_left 
             (fun (env_acc, binding_acc) (bind, b_exp, bind_tag) -> 
               match bind with
-              | BName(b_name, typ, b, t) ->
+              | BNameTyped(b_name, typ, b, t) ->
                   let new_name = if (is_runtime b_name) then b_name else (sprintf "%s#%d" b_name t) in
                   let updated_env = (b_name, new_name) :: env_acc in
                   (* Accumulate the binding with the new name but without renaming exprs yet *)
-                  (updated_env, binding_acc @ [(BName(new_name, typ, b, t), b_exp, bind_tag)])
+                  (updated_env, binding_acc @ [(BNameTyped(new_name, typ, b, t), b_exp, bind_tag)])
               (* We shouldn't really get here I think, maybe we throw instead? *)
               | _ -> (env_acc, binding_acc @ [(bind, b_exp, bind_tag)]))
             (env, []) 

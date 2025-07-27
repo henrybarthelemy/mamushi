@@ -13,7 +13,7 @@ open Printf
       [ DFun
           ( name,
           (* TODO FIX THIS :/ *)
-            List.map (fun name -> BName (name, TInt dummy_span, false, dummy_span)) argnames,
+            List.map (fun name -> BNameTyped (name, TInt dummy_span, false, dummy_span)) argnames,
             (* fix native calls types :/ *)
             TInt dummy_span,
             EApp

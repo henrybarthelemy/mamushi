@@ -59,7 +59,8 @@ type prim2 =
 
 type 'a bind =
   | BBlank of 'a
-  | BName of string * 'a typ * bool * 'a
+  | BNameTyped of string * 'a typ * bool * 'a
+  | BNameUntype of string * bool * 'a
   | BTuple of 'a bind list * 'a
 
 and 'a binding = 'a bind * 'a expr * 'a
@@ -235,9 +236,9 @@ let rec map_tag_E (f : 'a -> 'b) (e : 'a expr) =
 and map_tag_B (f : 'a -> 'b) b =
   match b with
   | BBlank tag -> BBlank (f tag)
-  | BName (x, typ, allow_shadow, ax) ->
+  | BNameTyped (x, typ, allow_shadow, ax) ->
       let tag_ax = f ax in
-      BName (x, map_tag_T f typ, allow_shadow, tag_ax)
+      BNameTyped (x, map_tag_T f typ, allow_shadow, tag_ax)
   | BTuple (binds, t) ->
       let tag_tup = f t in
       BTuple (List.map (map_tag_B f) binds, tag_tup)
@@ -355,7 +356,7 @@ and untagL l =
 and untagB b =
   match b with
   | BBlank _ -> BBlank ()
-  | BName (x, typ, allow_shadow, _) -> BName (x, untagT typ, allow_shadow, ())
+  | BNameTyped (x, typ, allow_shadow, _) -> BNameTyped (x, untagT typ, allow_shadow, ())
   | BTuple (binds, _) -> BTuple (List.map untagB binds, ())
 and untagD d =
   match d with

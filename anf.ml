@@ -34,7 +34,7 @@ open Pretty
           let (_, c_ctx) = helpI b_exp in
           let (c_exp, exp_ctx) = helpC exp in
           (c_exp, c_ctx @ exp_ctx))
-     | ELet ((BName (bind, _, _, _), exp, _) :: rest, body, pos) ->
+     | ELet ((BNameTyped (bind, _, _, _), exp, _) :: rest, body, pos) ->
          let exp_ans, exp_setup = helpC exp in
          let body_ans, body_setup = helpC (ELet (rest, body, pos)) in
          (body_ans, exp_setup @ [BLet (bind, exp_ans)] @ body_setup)
@@ -68,7 +68,7 @@ open Pretty
      | ELambda(binds, _, exp, _) -> 
        let arg_names = List.fold_left (fun acc b -> 
          match b with
-           | BName(s, _, _, _) -> acc @ [s]
+           | BNameTyped(s, _, _, _) -> acc @ [s]
            | _ -> raise (InternalCompilerError("ANF: Non-name binding in lambda"))
        ) [] binds in
        (CLambda(arg_names, helpA exp, ()), [])
@@ -77,7 +77,7 @@ open Pretty
         (fun (bind, b_exp, bind_tag) -> 
           let (b_cexp, _) = (helpC b_exp) in
           (match bind with 
-          | BName(s, _, _, _) -> (s, b_cexp)
+          | BNameTyped(s, _, _, _) -> (s, b_cexp)
           | _ -> raise (InternalCompilerError("ANF: Non-name binding in let-rec"))))
         binds
       in
@@ -155,11 +155,11 @@ open Pretty
         in
          let arg_names = List.fold_left (fun acc b -> 
            match b with
-             | BName(s, _, _, _) -> acc @ [s]
+             | BNameTyped(s, _, _, _) -> acc @ [s]
              | _ -> raise (InternalCompilerError("Well-formed should catch this"))
          ) [] binds in
          (ImmId(lambda_tmp_name, ()), [BLet (lambda_tmp_name, CLambda(arg_names, helpA exp, ()))])
-     | ELet ((BName (bind, _, _, _), exp, _) :: rest, body, pos) ->
+     | ELet ((BNameTyped (bind, _, _, _), exp, _) :: rest, body, pos) ->
          let exp_ans, exp_setup = helpC exp in
          let body_ans, body_setup = helpI (ELet (rest, body, pos)) in
          (body_ans, exp_setup @ [BLet (bind, exp_ans)] @ body_setup)
@@ -172,7 +172,7 @@ open Pretty
              we're only using those bindings locally *)
           let (b_cexp, _) = (helpC b_exp) in
           (match bind with 
-  | BName(s, _, _, _) -> (s, b_cexp)
+  | BNameTyped(s, _, _, _) -> (s, b_cexp)
           | _ -> raise (InternalCompilerError("ANF: Non-name binding in let-rec"))))
         binds
       in

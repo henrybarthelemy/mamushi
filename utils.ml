@@ -174,7 +174,7 @@ let rec unique (lst: 'a list) : 'a option =
 let rec find_bind_opt ls x =
   match ls with
   | [] -> None
-  | BName (y, _, _, v) :: rest ->
+  | BNameTyped (y, _, _, v) :: rest ->
       if y = x then
         Some v
       else

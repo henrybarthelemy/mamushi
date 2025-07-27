@@ -10,7 +10,7 @@ open Pretty
 let determine_function_type (d : 'a decl) : 'a typ =
   let convert_single_bind bind = 
     match bind with 
-    | BName (_, typ, _, _) -> typ
+    | BNameTyped (_, typ, _, _) -> typ
   in
   match d with 
   | DFun (str, bl, rt, body, loc) ->
@@ -71,7 +71,7 @@ and colapse_to_tenv binds : sourcespan typ envt =
   | [] -> []
   | bind :: rob -> 
     (match bind with 
-      | BName (name, typ, _, _) -> [(name, typ)] @ (colapse_to_tenv rob)
+      | BNameTyped (name, typ, _, _) -> [(name, typ)] @ (colapse_to_tenv rob)
       | BTuple (blist, _) -> (colapse_to_tenv binds) @ (colapse_to_tenv rob)
       | _ -> []))
 (* collects all the types in the expression making a type environment that results from it *)
@@ -155,7 +155,7 @@ let is_well_typed (p : sourcespan program) : sourcespan program fallible =
     | bind :: rob -> 
       let rob_errs = (undefined_types_in_binds_check tdecls rob) in
       (match bind with 
-      | BName (_, typ, _, _) -> (check_type_for_undefined typ tdecls)
+      | BNameTyped (_, typ, _, _) -> (check_type_for_undefined typ tdecls)
       | BTuple (blist, _) -> (undefined_types_in_binds_check tdecls blist) 
       | _ -> []) @ rob_errs
   and check_type_for_undefined typ tdecls = 
@@ -181,7 +181,7 @@ let is_well_typed (p : sourcespan program) : sourcespan program fallible =
       let rec gather_tuple_typ (blist:'a Exprs.bind list) =
         TProduct (List.map (fun b -> 
         match b with 
-        | BName (_, typ, _, _) -> typ
+        | BNameTyped (_, typ, _, _) -> typ
         | BTuple (nested_blist, _) -> gather_tuple_typ nested_blist
         (* | BBlank _ -> TBlank () *)
         | _ -> failwith "gotta figure this bs out") blist, loc) 
@@ -220,7 +220,7 @@ let is_well_typed (p : sourcespan program) : sourcespan program fallible =
       | (bind, b_exp, bind_tag) :: rob -> 
         let rec check_bind tenv bind : 'a typ envt = 
           (match bind with 
-          | BName (name, typ, _, _) -> 
+          | BNameTyped (name, typ, _, _) -> 
             let new_tenv = ((name, typ) :: tenv) in 
             (check_bindings new_tenv rob) 
           | BTuple (blist, tag) -> 
@@ -242,7 +242,7 @@ let is_well_typed (p : sourcespan program) : sourcespan program fallible =
       | (bind, b_exp, bind_tag) :: rob -> 
         let rec add_bind tenv bind : 'a typ envt = 
           (match bind with 
-          | BName (name, typ, _, _) -> 
+          | BNameTyped (name, typ, _, _) -> 
             let new_tenv = ((name, typ) :: tenv) in 
             (add_bindings new_tenv rob) 
           | _ -> tenv) in 
@@ -399,7 +399,7 @@ let is_well_typed (p : sourcespan program) : sourcespan program fallible =
       | bind :: rob -> 
         let rec add_bind tenv bind : 'a typ envt = 
           (match bind with 
-          | BName (name, typ, _, _) -> 
+          | BNameTyped (name, typ, _, _) -> 
             let new_tenv = ((name, typ) :: tenv) in 
             (add_bindings new_tenv rob) 
           | _ -> tenv) in 
@@ -448,7 +448,7 @@ let is_well_typed (p : sourcespan program) : sourcespan program fallible =
       | (bind, b_exp, bind_tag) :: rob -> 
         let rec check_bind tenv bind : (exn list * sourcespan typ envt) = 
           (match bind with 
-          | BName (name, typ, _, _) -> 
+          | BNameTyped (name, typ, _, _) -> 
             let new_tenv = ((name, typ) :: tenv) in 
             let (rest_err, rest_env) = (check_bindings new_tenv rob) in
             (((check_type_with tenv b_exp (untagT typ))
@@ -458,7 +458,7 @@ let is_well_typed (p : sourcespan program) : sourcespan program fallible =
             let rec gather_tuple_typ (blist: Exprs.sourcespan Exprs.bind list) =
               TProduct (List.map (fun b -> 
               match b with 
-              | BName (_, typ, _, _) -> typ
+              | BNameTyped (_, typ, _, _) -> typ
               | BTuple (nested_blist, _) -> gather_tuple_typ nested_blist
               (* | BBlank _ -> TBlank () *)
               | _ -> failwith "gotta figure this bs out") blist, dummy_span) 
@@ -486,7 +486,7 @@ let is_well_typed (p : sourcespan program) : sourcespan program fallible =
         | (bind, b_exp, bind_tag) :: rob -> 
           let rec add_bind tenv bind : 'a typ envt = 
             (match bind with 
-            | BName (name, typ, _, _) -> 
+            | BNameTyped (name, typ, _, _) -> 
               let new_tenv = ((name, typ) :: tenv) in 
               (add_bindings new_tenv rob) 
             | _ -> tenv) in 
@@ -500,7 +500,7 @@ let is_well_typed (p : sourcespan program) : sourcespan program fallible =
       | (bind, b_exp, bind_tag) :: rob -> 
         let rec check_bind bind : (exn list) = 
           (match bind with 
-          | BName (name, typ, _, _) -> 
+          | BNameTyped (name, typ, _, _) -> 
             let rest_err = (check_bindings rob) in
             (check_type_with e_tenv b_exp (untagT typ))
             @ (type_check_expr b_exp e_tenv)
@@ -546,7 +546,7 @@ let is_well_typed (p : sourcespan program) : sourcespan program fallible =
           let rec gather_tuple_typ (blist: Exprs.sourcespan Exprs.bind list) =
             TProduct (List.map (fun b -> 
             match b with 
-            | BName (_, typ, _, _) -> typ
+            | BNameTyped (_, typ, _, _) -> typ
             | BTuple (nested_blist, _) -> gather_tuple_typ nested_blist
             (* | BBlank _ -> TBlank () *)
             | _ -> failwith "gotta figure this bs out") blist, loc) 

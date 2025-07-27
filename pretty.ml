@@ -82,7 +82,7 @@ and string_of_type (t : 'a typ) : string = string_of_type_with 1000 (fun _ -> ""
 let rec string_of_bind (b : 'a bind) : string =
   match b with
   | BBlank _ -> "_"
-  | BName (name, typ, allow_shadow, _) ->
+  | BNameTyped (name, typ, allow_shadow, _) ->
       ( if allow_shadow then
           "shadow "
         else
@@ -386,7 +386,7 @@ let rec format_bind (fmt : Format.formatter) (print_a : 'a -> string) (b : 'a bi
   | BBlank a ->
       pp_print_string fmt "#BLANK# : ";
       pp_print_string fmt (maybe_angle (print_a a))
-  | BName (x, typ, allow_shadow, a) ->
+  | BNameTyped (x, typ, allow_shadow, a) ->
       if allow_shadow then pp_print_string fmt "shadow ";
       pp_print_string fmt x;
       pp_print_string fmt (maybe_angle (print_a a))
