@@ -1,0 +1,13 @@
+let x = 5, y = 10, z = 3 in
+if (x == y) && print(404):
+    print(x)
+else:
+    let x = print(true) in
+    if x || print(123123123):
+        let z = print(y) + print(z) in
+        if ((add1(print(z)) > 13) && (print(add1(z)) > 9)):
+            print(true)
+        else:
+            print(4242)
+    else:
+        false

@@ -1,0 +1,7 @@
+def run(x):
+  if (input() == true):
+    123
+  else:
+    x
+
+run(false)

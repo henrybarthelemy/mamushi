@@ -1,0 +1,25 @@
+def length(l):
+  if l == nil: 0
+  else: 1 + length(l[1])
+
+def sum(l):
+  if l == nil: 0
+  else: l[0] + sum(l[1])
+
+def append(l1, l2):
+  if l1 == nil: l2
+  else: (l1[0], append(l1[1], l2))
+
+def reverse_help(l1, acc):
+  if l1 == nil: acc
+  else: reverse_help(l1[1], (l1[0], acc))
+
+def reverse(l1):
+  reverse_help(l1, nil)
+
+def map(f, l):
+  if l == nil: nil
+  else: (f(l[0]), map(l[1]))
+
+let list = (1, (2, (3, (4, (5, nil))))) in
+map((lambda (x): x + 1), list)

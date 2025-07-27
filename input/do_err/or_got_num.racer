@@ -1,0 +1,5 @@
+let x = false, y = false, not_here = 123123 in
+    if (x == y):
+        let x = 123, y = 321 in (false || x)
+    else:
+        print(not_here)

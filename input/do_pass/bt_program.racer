@@ -1,0 +1,51 @@
+def insert(tree, value):
+    if (equal(tree, false)):
+        (value, false, false)
+    else:
+        let (node_value, left, right) = tree in
+        if (value < node_value):
+            (node_value, insert(left, value), right)
+        else:
+            (node_value, left, insert(right, value))
+
+and def length(l):
+  if l == nil: 0
+  else: 1 + length(l[1])
+
+and def sum(l):
+  if l == nil: 0
+  else: l[0] + sum(l[1])
+
+and def append(l1, l2):
+  if l1 == nil: l2
+  else: (l1[0], append(l1[1], l2))
+
+and def reverse_help(l1, acc):
+  if l1 == nil: acc
+  else: reverse_help(l1[1], (l1[0], acc))
+
+and def reverse(l1):
+  reverse_help(l1, nil)
+
+and def link(first, rest):
+  (first, rest)
+  
+and def to_list(tree):
+    if (equal(tree, false)):
+        nil
+    else:
+        let (node_value, left, right) = tree in
+        append(append(to_list(left), (node_value, nil)), to_list(right))
+
+
+and def run(tree):
+  if (input() == true):
+    let i = input() in
+      if (isnum(i)):
+        run(insert(tree, i))
+      else:
+        to_list(tree)
+  else:
+    tree
+
+run(false)

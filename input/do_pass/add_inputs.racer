@@ -1,0 +1,6 @@
+def add_inputs() :
+    let x = input() in 
+    let y = input() in
+    x + y
+
+add_inputs()

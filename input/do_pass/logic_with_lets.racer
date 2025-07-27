@@ -1,0 +1,9 @@
+let x = true, y = false in
+if print(print(x || y)):
+    let x = 3, z = x in
+    if ((x == z) || print(30)):
+        print(print(true) && print(false))
+    else:
+        print(123123)
+else:
+    print(123123)

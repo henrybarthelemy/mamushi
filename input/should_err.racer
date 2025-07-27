@@ -1,0 +1,16 @@
+type box = 
+    | Box of int
+
+type other_box = 
+    | Box2 of int
+
+# Not okay
+let a_box : box = Box2(3) in
+let a_box : other_box = Box(1) in
+let wrong_add : int = 1 + true in
+let wrong_terminal : bool = 3 in
+let wrong_not : bool = !(3) in
+
+# Okay
+let a_box : other_box = Box2(1) in 4
+

@@ -1,0 +1,9 @@
+if (3 * 2 == (2 * 3)):
+    let sleep = 0 in
+        if sleep:
+            print(let win = 1000000 in win)
+        else:
+            false
+else:
+    let not_here = 1000 in 
+        not_here

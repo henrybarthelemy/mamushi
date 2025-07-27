@@ -1,0 +1,9 @@
+def link(first, rest):
+  (first, rest)
+
+def length(l):
+  if l == nil: 0
+  else: 1 + length(l[1])
+
+let x = link(1, link(2, link(3, nil))) in
+(length(x), length(nil))

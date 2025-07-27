@@ -1,0 +1,5 @@
+type t =
+  | Some of int * bool * int
+  | None
+
+Some(1, false, 3)

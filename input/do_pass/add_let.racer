@@ -1,0 +1,1 @@
+let idx = (lambda (x, y): x + y) in idx(1, 3)

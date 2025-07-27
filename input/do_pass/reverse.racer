@@ -1,0 +1,12 @@
+def reverse_help(l1, acc):
+  if l1 == nil: acc
+  else: reverse_help(l1[1], (l1[0], acc))
+
+and def reverse(l1):
+  reverse_help(l1, nil)
+
+def link(first, rest):
+  (first, rest)
+
+let x = link(1, link(2, link(3, nil))) in
+(reverse(x), reverse(nil))

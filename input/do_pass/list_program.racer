@@ -1,0 +1,38 @@
+def length(l):
+  if l == nil: 0
+  else: 1 + length(l[1])
+
+and def sum(l):
+  if l == nil: 0
+  else: l[0] + sum(l[1])
+
+and def append(l1, l2):
+  if l1 == nil: l2
+  else: (l1[0], append(l1[1], l2))
+
+and def reverse_help(l1, acc):
+  if l1 == nil: acc
+  else: reverse_help(l1[1], (l1[0], acc))
+
+and def reverse(l1):
+  reverse_help(l1, nil)
+
+and def link(first, rest):
+  (first, rest)
+
+and def run(x):
+  if (input() == true):
+    let i = input() in
+      if (isnum(i)):
+        run(link(i, x))
+      else:
+        if (i == true):
+          run(link(sum(x), x))
+        else:
+          run(reverse(x))
+  else:
+    x
+
+run(nil)
+
+

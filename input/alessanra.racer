@@ -1,0 +1,139 @@
+type digit =
+  | D0
+  | D1
+  | D2
+  | D3
+  | D4
+  | D5
+  | D6
+  | D7
+  | D8
+  | D9
+
+type digits =
+  | Some of digit * digits
+  | None
+
+type integer =
+  | Positive of digits
+  | Negative of digits
+  | Zero
+
+type print_sign =
+  | Plus
+  | Minus
+
+def add_one_digit(d: digit) -> digit * bool :
+  match d with
+  | D0 -> (D1, false)
+  | D1 -> (D2, false)
+  | D2 -> (D3, false)
+  | D3 -> (D4, false)
+  | D4 -> (D5, false)
+  | D5 -> (D6, false)
+  | D6 -> (D7, false)
+  | D7 -> (D8, false)
+  | D8 -> (D9, false)
+  | D9 -> (D0, true)
+  
+def sub_one_digit(d: digit) -> digit * bool :
+  match d with
+  | D0 -> (D9, true)
+  | D1 -> (D0, false)
+  | D2 -> (D1, false)
+  | D3 -> (D2, false)
+  | D4 -> (D3, false)
+  | D5 -> (D4, false)
+  | D6 -> (D5, false)
+  | D7 -> (D6, false)
+  | D8 -> (D7, false)
+  | D9 -> (D8, false)
+
+def digit_to_int(d: digit) -> int :
+  match d with
+  | D0 -> 0
+  | D1 -> 1
+  | D2 -> 2
+  | D3 -> 3
+  | D4 -> 4
+  | D5 -> 5
+  | D6 -> 6
+  | D7 -> 7
+  | D8 -> 8
+  | D9 -> 9
+
+def print_digits(d: digits) -> digits :
+  match d with
+  | Some(head, None) -> println(digit_to_int(head)); Some(head, None)
+  | Some(head, tail) -> print(digit_to_int(head)); Some(head, print_digits(tail))
+  | None -> None
+
+def print_integer(i: integer) -> integer :
+  match i with
+  | Positive(d) -> print(Plus); Positive(print_digits(d))
+  | Negative(d) -> print(Minus); Negative(print_digits(d))
+  | Zero -> print(0); i
+
+def add_one_digits_with_carry(d: digits) -> digits * bool :
+  match d with
+  | Some(head, tail) -> 
+    (match add_one_digits_with_carry(tail) with
+     | (new_tail, true) ->
+      (match add_one_digit(head) with
+        | (new_head, carry) -> (Some(new_head, new_tail), carry))
+     | (new_tail, false) -> (Some(head, new_tail), false))
+  | None -> (None, true)
+  
+def sub_one_digits_with_carry(d: digits) -> digits * bool :
+  match d with
+  | Some(head, tail) ->
+    (match sub_one_digits_with_carry(tail) with
+    | (new_tail, true) ->
+      (match sub_one_digit(head) with
+      | (new_head, carry) -> (Some(new_head, new_tail), carry))
+    | (new_tail, false) -> (Some(head, new_tail), false))
+  | None -> (None, true)
+
+def add_one_digits(d: digits) -> digits :
+  match add_one_digits_with_carry(d) with
+  | (new_d, false) -> new_d
+  | (new_d, true) -> Some(D1, new_d)
+
+def sub_one_digits(d: digits) -> digits :
+  match sub_one_digits_with_carry(d) with
+  | (new_d, false) -> new_d
+  | (new_d, true) -> Some(D1, new_d)
+
+def ten_times_digits(d: digits) -> digits :
+  match d with
+  | Some(head, tail) -> Some(head, ten_times_digits(tail))
+  | None -> Some(D0, None)
+
+def add_one(i: integer) -> integer :
+  match i with
+  | Positive(d) -> Positive(add_one_digits(d))
+  | Negative(d) ->
+    (match sub_one_digits(d) with
+    | Some(D0, None) -> Zero
+    | new_d -> Negative(new_d))
+  | Zero -> Positive(Some(D1, None))
+  
+def sub_one(i: integer) -> integer :
+  match i with
+  | Positive(d) -> 
+    (match sub_one_digits(d) with
+    | Some(D0, None) -> Zero
+    | new_d -> Positive(new_d))
+  | Negative(d) -> Negative(add_one_digits(d))
+  | Zero -> Negative(Some(D1, None))
+
+def ten_times(i: integer) -> integer :
+  match i with
+  | Positive(d) -> Positive(ten_times_digits(d))
+  | Negative(d) -> Negative(ten_times_digits(d))
+  | Zero -> Some(D1, None)
+
+# sub_one(sub_one(sub_one(Positive(Some(D1, None)))))
+# print_integer(add_one(Positive(Some(D9, Some(D9, Some(D9, None))))))
+print_integer(ten_times(add_one(Positive(Some(D9, Some(D9, Some(D9, None)))))))
+

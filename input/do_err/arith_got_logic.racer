@@ -1,0 +1,8 @@
+let hello = 21, world = 21 in
+    let p = if print(hello==world): false else: true in
+        if p:
+            false
+        else:
+            (true + false)
+
+        

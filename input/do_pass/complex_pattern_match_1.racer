@@ -1,0 +1,16 @@
+type t =
+  | Some of t
+  | None
+
+type x =
+  | A of bool
+  | B of int
+  | C of t
+
+match C(Some(None())) with
+  | A(true) -> 1
+  | B(5) -> 2
+  | C(Some(None)) -> 3
+  | C(Some(p)) -> 4
+  | C(p) -> 5
+  | _ -> 6

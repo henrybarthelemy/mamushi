@@ -1,0 +1,17 @@
+let x = false || print(!(print(false))), y = print(4) in
+print(
+  add1(
+    if print(print(3) * 4 >= (if print(print(isnum(10 * 42)) 
+      && (if print(100 < 101):
+        print(isbool(add1(1) >= 1))
+      else:
+        print(false)
+      )):
+        print(3)
+      else:
+        print(4))):
+      print(31)
+    else:
+      print(17)
+  )
+)

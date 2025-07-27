@@ -1,0 +1,52 @@
+# Ocaml artifacts build
+*.annot
+*.cmo
+*.cma
+*.cmi
+*.a
+*.o
+*.cmx
+*.cmxs
+*.cmxa
+
+# ocamlbuild working directory
+_build/
+
+# ocamlbuild targets
+*.byte
+*.native
+
+# oasis generated files
+setup.data
+setup.log
+
+# vs code configuration file
+.vscode
+
+# Merlin configuring file for Vim and Emacs
+.merlin
+
+# Dune generated files
+*.install
+
+# mac stupidness
+*.DS_STORE
+
+# Local OPAM switch
+_opam/
+
+# Our compiler's build artifacts
+output/*.o 
+output/*.s 
+output/*.dSYM 
+output/*.run
+output/*/*.o 
+output/*/*.s 
+output/*/*.dSYM 
+output/*/*.run
+*.log
+
+# test build artifact to prevent versioning issue (just do 'make test')
+test
+# ... ignore this too ig just do 'make test'
+main

@@ -1,0 +1,13 @@
+type box1 = 
+    | Box of int
+
+type box2 = 
+    | Box2 of int
+
+def to_box_2(box: box1) -> box2 : 
+    match box with
+    | Box(x) -> Box2(2)
+
+# Okay
+let a_box : box2 = Box2(1) in 3;
+let b_box : box2 = to_box_2(a_box) in 5

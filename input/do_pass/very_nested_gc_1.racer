@@ -1,0 +1,31 @@
+# natives (+ 20)
+
+# no captures, 1 closure (5 words)
+def f(x):
+  # allocs 2, 4 word tuples (8 words)
+  let dead_tup = (1, (2, 2, 2), 3) in
+
+  # allocs a lambda which references the tuple (5 words)
+  let dead_func = (lambda (y): dead_tup[y]) in
+
+  # returns the lambda , which captures the tuple, which references the other tuple
+  # at this point, nothing will be dead until we call the lambda and then collect
+  print(dead_func)
+
+# lambda, captures f, (5 words)
+def g():
+  # needs to alloc tup arg bc anf (3 words)
+  let a = f((1, 2)) in
+  # calling the function means that we get b = (2, 2, 2)... so dead_tup is still referenced but not needed
+  let b = a(1) in
+  # return (2, 2, 2), we have no more references to dead_func so that and dead_tup are out of scope, but (2, 2, 2), should get copied
+  b
+
+let z = g() in
+# needs 47 slots before this, but only 35 of them should... be in scope
+# therefore, we will garbage collect here, and then be able to use the 12 slots for this tuple
+let zz = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11) in
+# this checks we can still see the (2, 2, 2) tuple after GC
+z[1]
+
+# therefore we need 47 total for this to work, but GC will be triggered for any value from 47 for the heap

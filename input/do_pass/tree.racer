@@ -1,0 +1,16 @@
+def insert(tree, value):
+    if (equal(tree, false)):
+        (value, false, false)
+    else:
+        let (node_value, left, right) = tree in
+        if (value < node_value):
+            (node_value, insert(left, value), right)
+        else:
+            (node_value, left, insert(right, value))
+
+let leaf = false in
+let node_3 = insert(leaf, 3) in
+let node_43 = insert(node_3, 4) in
+let node_543 = insert(node_43, 5) in
+let node_5432 = insert(node_543, 2) in
+(leaf, node_3, node_43, node_543, node_5432)

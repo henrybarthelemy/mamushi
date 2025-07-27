@@ -1,0 +1,13 @@
+def is_odd(x) :
+    if (x == 1):
+        true
+    else:
+        is_even(x - 1)
+and def is_even(y) :
+    if (y == 0):
+        let x = true in x
+    else:
+        let is_odd = (lambda (x): is_odd(print(x - 1))) in 
+        is_odd(y)
+
+is_odd(9)

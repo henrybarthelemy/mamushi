@@ -1,0 +1,17 @@
+# +20 natives
+# +4 closure
+def f(x):
+  # +4 tup (dead after call)
+  let tmp = (1,2,3) in
+  3
+
+# +4 closure
+def g(x):
+  let y = f(x) in
+  # +4 should call GC to get rid of tmp
+  (4,5,6)
+
+# this value will get moved like twice bc GC before it's used (+4)
+let a = (7,8,9) in
+let b = g(1) in
+a[2] + b[1]

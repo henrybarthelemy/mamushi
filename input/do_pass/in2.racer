@@ -1,0 +1,1 @@
+let x = 1, a = (lambda: let z = 1 in z + x), y = 2 in x + a() + y

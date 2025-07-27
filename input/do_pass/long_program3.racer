@@ -1,0 +1,13 @@
+let a = 1, b = 2 in
+let c = 3 in
+let d = a + c * b in
+let e = add1(d) in
+let f = 3 * c, g = a, h = g in
+let i = c in
+if true: let j = 1234 in 
+  let cat = 0 in
+  let j = j in
+  sub1(j + i)
+else: 
+  let cat = 1 in
+  cat

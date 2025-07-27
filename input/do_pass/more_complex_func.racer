@@ -1,0 +1,31 @@
+def add(x, y) :
+    x + y
+
+def mult(x, y) :
+    if (x == 0):
+        0
+    else:
+        print(add(y, mult(x - 1, y)))
+
+def sub(x, y, z) :
+    x - y - z
+
+def identity(x) :
+    x
+
+def c(n) :
+    if (n >= 0):
+        true
+    else:
+        let result = add(n, identity(n - 1)) in
+        c(result - 1)
+
+def a() :
+    let x = add(3, 4) in
+    let y = mult(sub(10, 2, 1), 2) in
+    c(y - x)
+
+def b(x, y) :
+    a()
+
+let a = 0 in b(a, a)

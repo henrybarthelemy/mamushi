@@ -1,0 +1,7 @@
+def fact_sum_acc(n, acc):
+  if n == 0:
+    acc
+  else:
+    fact_sum_acc(n - 1, acc + n)
+
+fact_sum_acc(3, 0)

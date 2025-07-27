@@ -1,0 +1,10 @@
+def add_one(x) :
+    x + 1
+
+def sub_one(x) :
+    x - 1
+
+def apply(f, x) :
+    f(x)
+
+apply(add_one, 1)

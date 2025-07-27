@@ -1,0 +1,23 @@
+type char =
+  | H
+  | E
+  | L
+  | O_
+  | W
+  | O
+  | R
+  | D
+
+type string =
+  | S of char * string
+  | End
+
+def print_string(s: string) -> string :
+  match s with
+    | End -> println(End)
+    | S(c, End) -> println(c)
+    | S(c, rest) -> print(c); print_string(rest)
+
+let s: string = S(H, S(E, S(L, S(L, S(O_, S(W, S(O, S(R, S(L, S(D, End)))))))))) in
+print_string(s);
+0
